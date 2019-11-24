@@ -984,7 +984,6 @@ class Utils {
                 result[param[0]] = decodeURIComponent(param[1].replace(/\+/g, " "));
             }
         }
-
         return result;
     }
 

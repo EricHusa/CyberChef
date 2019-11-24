@@ -373,7 +373,6 @@ class InputWaiter {
                     });
                 }
                 this.updateInputHighlight(inputData.inputNum, inputData.pos);
-                console.log(JSON.stringify(inputData.pos));
                 this.getHighlightInfo();
 
                 if (!silent) window.dispatchEvent(this.manager.statechange);
@@ -871,8 +870,7 @@ class InputWaiter {
     async getHighlightInfo() {
         const activeTab = this.manager.tabs.getActiveInputTab();
         const tabObj = await this.getInputObj(activeTab);
-        this.manager.highlighter.highlightInput(tabObj.highlight);
-        console.log(activeTab + " - " + JSON.stringify(tabObj));
+        this.manager.highlighter.highlightOutput(tabObj.highlight);
     }
 
     /**
@@ -1043,6 +1041,7 @@ class InputWaiter {
                     silent: true
                 }
             });
+            this.manager.highlighter.mouseUp();
         } else {
             const minNum = Math.min(...this.manager.tabs.getInputTabList());
             let direction = "right";

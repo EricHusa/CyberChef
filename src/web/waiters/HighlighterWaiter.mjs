@@ -151,11 +151,9 @@ class HighlighterWaiter {
      * @param {event} e
      */
     inputMousedown(e) {
-        console.log('mouse down');
         this.mouseButtonDown = true;
         this.mouseTarget = INPUT;
         this.removeHighlights();
-
         const el = e.target;
         const start = el.selectionStart;
         const end = el.selectionEnd;
@@ -164,7 +162,6 @@ class HighlighterWaiter {
             document.getElementById("input-selection-info").innerHTML = this.selectionInfo(start, end);
             this.highlightOutput([{start: start, end: end}]);
         }
-        //console.log('inputMousedown: ' + start + ", " + end);
     }
 
 
@@ -178,7 +175,6 @@ class HighlighterWaiter {
         this.mouseButtonDown = true;
         this.mouseTarget = OUTPUT;
         this.removeHighlights();
-
         const el = e.target;
         const start = el.selectionStart;
         const end = el.selectionEnd;
@@ -187,7 +183,6 @@ class HighlighterWaiter {
             document.getElementById("output-selection-info").innerHTML = this.selectionInfo(start, end);
             this.highlightInput([{start: start, end: end}]);
         }
-        //console.log('outputMousedown: ' + start + ", " + end);
     }
 
 
@@ -214,7 +209,6 @@ class HighlighterWaiter {
      * @param {event} e
      */
     inputMouseup(e) {
-        console.log('mouse up');
         this.mouseButtonDown = false;
     }
 
@@ -258,7 +252,6 @@ class HighlighterWaiter {
 
         if (start !== 0 || end !== 0) {
             document.getElementById("input-selection-info").innerHTML = this.selectionInfo(start, end);
-            console.log(this.mouseButtonDown + ', ' + e.which );
             this.highlightOutput([{start: start, end: end}]);
         }
     }
@@ -307,6 +300,13 @@ class HighlighterWaiter {
         }
     }
 
+    /**
+     * Resets mouse variable to up position.
+     * Used on tab change.
+     */
+    mouseUp(){
+        this.mouseButtonDown = false;
+    }
 
     /**
      * Given start and end offsets, writes the HTML for the selection info element with the correct
@@ -350,7 +350,6 @@ class HighlighterWaiter {
      * @param {number} pos.end - The end offset.
      */
     highlightOutput(pos) {
-        //console.log('output: ' + JSON.stringify(pos));
         if (!this.app.autoBake_ || this.app.baking) return false;
         this.manager.worker.highlight(this.app.getRecipeConfig(), "forward", pos);
     }
@@ -368,7 +367,6 @@ class HighlighterWaiter {
      * @param {number} pos.end - The end offset.
      */
     highlightInput(pos) {
-        console.log('input: ' +  JSON.stringify(pos));
         if (!this.app.autoBake_ || this.app.baking) return false;
         this.manager.worker.highlight(this.app.getRecipeConfig(), "reverse", pos);
     }
@@ -384,11 +382,9 @@ class HighlighterWaiter {
      * @param {string} direction
      */
     displayHighlights(pos, direction) {
-        if (!pos) return;
-        //console.log('displayHighlights: ' +  JSON.stringify(pos) + ", " + direction)
+        if (!pos || pos.length === 0) return;
         const inputNum = this.manager.tabs.getActiveInputTab();
         if (inputNum !== this.manager.tabs.getActiveOutputTab()) return;
-        //console.log(this.manager.tabs.getActiveInputTab());
         const io = direction === "forward" ? "output" : "input";
 
         document.getElementById(io + "-selection-info").innerHTML = this.selectionInfo(pos[0].start, pos[0].end);
@@ -398,12 +394,11 @@ class HighlighterWaiter {
             pos);
 
          if (direction === "forward"){
-             this.manager.input.updateInputHighlight(inputNum, pos)
              this.highlightInput(pos);
         }
-        else{
-             this.manager.tabs.getActiveInputTab()
-        }
+         else{
+             this.manager.input.updateInputHighlight(inputNum, pos)
+         }
     }
 
 
@@ -418,7 +413,6 @@ class HighlighterWaiter {
      * @param {number} pos.end - The end offset.
      */
     async highlight(textarea, highlighter, pos) {
-        //console.log('-------- highlight: ' +  JSON.stringify(pos));
         if (!this.app.options.showHighlighter) return false;
         if (!this.app.options.attemptHighlight) return false;
 

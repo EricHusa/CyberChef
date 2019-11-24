@@ -596,7 +596,6 @@ self.updateInputHighlight = function(inputData) {
     const pos = inputData.pos;
     if (inputNum < 1) return;
     self.inputs[inputNum].highlight = pos;
-    //console.log(inputNum + " - " + JSON.stringify(self.inputs[inputNum].highlight));
 }
 
 /**
