@@ -845,7 +845,7 @@ self.addInput = function(
             newInputObj.data = "";
             newInputObj.status = "loaded";
             newInputObj.progress = 100;
-            newInputObj.highlight = [];
+            newInputObj.highlight = [{"start":0,"end":0}];
             break;
         case "file":
             newInputObj.data = {

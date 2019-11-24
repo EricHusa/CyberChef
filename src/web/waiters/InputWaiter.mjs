@@ -328,7 +328,7 @@ class InputWaiter {
      * @param {object} inputData - Object containing the input and its metadata
      * @param {number} inputData.inputNum - The unique inputNum for the selected input
      * @param {string | object} inputData.input - The actual input data
-     * @param {number} inputData.pos - The highlight object for the selected tab
+     * @param {object} inputData.pos - The highlight object for the selected tab
      * @param {string} inputData.name - The name of the input file
      * @param {number} inputData.size - The size in bytes of the input file
      * @param {string} inputData.type - The MIME type of the input file
