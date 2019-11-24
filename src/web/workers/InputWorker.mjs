@@ -454,11 +454,11 @@ self.setInput = function(inputData) {
     if (input === undefined || input === null) return;
 
     let inputVal = input.data;
-    let pos = input.highlight;
+    let highlight = input.highlight;
     const inputObj = {
         inputNum: inputNum,
         input: inputVal,
-        highlight: pos
+        pos: highlight
     };
     if (typeof inputVal !== "string") {
         inputObj.name = inputVal.name;
@@ -589,11 +589,11 @@ self.updateInputValue = function(inputData) {
  *
  * @param {object} inputData
  * @param {number} inputData.inputNum - The input that's having its value updated
- * @param {Object} inputData.highlight - The position object for the highlight.
+ * @param {Object} inputData.pos - The position object for the highlight.
  */
 self.updateInputHighlight = function(inputData) {
     const inputNum = inputData.inputNum;
-    const pos = inputData.highlight;
+    const pos = inputData.pos;
 
     if (inputNum < 1) return;
     self.inputs[inputNum].highlight = pos;
