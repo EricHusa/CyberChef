@@ -151,6 +151,7 @@ class HighlighterWaiter {
      * @param {event} e
      */
     inputMousedown(e) {
+        console.log('mouse down');
         this.mouseButtonDown = true;
         this.mouseTarget = INPUT;
         this.removeHighlights();
@@ -163,6 +164,7 @@ class HighlighterWaiter {
             document.getElementById("input-selection-info").innerHTML = this.selectionInfo(start, end);
             this.highlightOutput([{start: start, end: end}]);
         }
+        //console.log('inputMousedown: ' + start + ", " + end);
     }
 
 
@@ -185,6 +187,7 @@ class HighlighterWaiter {
             document.getElementById("output-selection-info").innerHTML = this.selectionInfo(start, end);
             this.highlightInput([{start: start, end: end}]);
         }
+        //console.log('outputMousedown: ' + start + ", " + end);
     }
 
 
@@ -211,6 +214,7 @@ class HighlighterWaiter {
      * @param {event} e
      */
     inputMouseup(e) {
+        console.log('mouse up');
         this.mouseButtonDown = false;
     }
 
@@ -254,6 +258,7 @@ class HighlighterWaiter {
 
         if (start !== 0 || end !== 0) {
             document.getElementById("input-selection-info").innerHTML = this.selectionInfo(start, end);
+            console.log(this.mouseButtonDown + ', ' + e.which );
             this.highlightOutput([{start: start, end: end}]);
         }
     }
@@ -345,6 +350,7 @@ class HighlighterWaiter {
      * @param {number} pos.end - The end offset.
      */
     highlightOutput(pos) {
+        //console.log('output: ' + JSON.stringify(pos));
         if (!this.app.autoBake_ || this.app.baking) return false;
         this.manager.worker.highlight(this.app.getRecipeConfig(), "forward", pos);
     }
@@ -362,6 +368,7 @@ class HighlighterWaiter {
      * @param {number} pos.end - The end offset.
      */
     highlightInput(pos) {
+        console.log('input: ' +  JSON.stringify(pos));
         if (!this.app.autoBake_ || this.app.baking) return false;
         this.manager.worker.highlight(this.app.getRecipeConfig(), "reverse", pos);
     }
@@ -373,13 +380,15 @@ class HighlighterWaiter {
      * @param {Object} pos - The position object for the highlight.
      * @param {number} pos.start - The start offset.
      * @param {number} pos.end - The end offset.
+     * @param {number} inputNum - The input that's having its highlight value updated
      * @param {string} direction
      */
     displayHighlights(pos, direction) {
         if (!pos) return;
-
-        if (this.manager.tabs.getActiveInputTab() !== this.manager.tabs.getActiveOutputTab()) return;
-
+        //console.log('displayHighlights: ' +  JSON.stringify(pos) + ", " + direction)
+        const inputNum = this.manager.tabs.getActiveInputTab();
+        if (inputNum !== this.manager.tabs.getActiveOutputTab()) return;
+        //console.log(this.manager.tabs.getActiveInputTab());
         const io = direction === "forward" ? "output" : "input";
 
         document.getElementById(io + "-selection-info").innerHTML = this.selectionInfo(pos[0].start, pos[0].end);
@@ -387,6 +396,14 @@ class HighlighterWaiter {
             document.getElementById(io + "-text"),
             document.getElementById(io + "-highlighter"),
             pos);
+
+         if (direction === "forward"){
+             this.manager.input.updateInputHighlight(inputNum, pos)
+             this.highlightInput(pos);
+        }
+        else{
+             this.manager.tabs.getActiveInputTab()
+        }
     }
 
 
@@ -401,6 +418,7 @@ class HighlighterWaiter {
      * @param {number} pos.end - The end offset.
      */
     async highlight(textarea, highlighter, pos) {
+        //console.log('-------- highlight: ' +  JSON.stringify(pos));
         if (!this.app.options.showHighlighter) return false;
         if (!this.app.options.attemptHighlight) return false;
 

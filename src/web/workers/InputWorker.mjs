@@ -53,6 +53,9 @@ self.addEventListener("message", function(e) {
         case "updateInputValue":
             self.updateInputValue(r.data);
             break;
+        case "updateInputHighlight":
+            self.updateInputHighlight(r.data);
+            break;
         case "updateInputObj":
             self.updateInputObj(r.data);
             break;
@@ -451,9 +454,11 @@ self.setInput = function(inputData) {
     if (input === undefined || input === null) return;
 
     let inputVal = input.data;
+    let highlight = input.highlight;
     const inputObj = {
         inputNum: inputNum,
-        input: inputVal
+        input: inputVal,
+        pos: highlight
     };
     if (typeof inputVal !== "string") {
         inputObj.name = inputVal.name;
@@ -578,6 +583,21 @@ self.updateInputValue = function(inputData) {
         });
     }
 };
+
+/**
+ * Update the stored value of an input.
+ *
+ * @param {object} inputData
+ * @param {number} inputData.inputNum - The input that's having its value updated
+ * @param {Object} inputData.pos - The position object for the highlight.
+ */
+self.updateInputHighlight = function(inputData) {
+    const inputNum = inputData.inputNum;
+    const pos = inputData.pos;
+    if (inputNum < 1) return;
+    self.inputs[inputNum].highlight = pos;
+    //console.log(inputNum + " - " + JSON.stringify(self.inputs[inputNum].highlight));
+}
 
 /**
  * Update the stored data object for an input.
@@ -825,6 +845,7 @@ self.addInput = function(
             newInputObj.data = "";
             newInputObj.status = "loaded";
             newInputObj.progress = 100;
+            newInputObj.highlight = [];
             break;
         case "file":
             newInputObj.data = {

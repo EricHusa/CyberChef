@@ -327,6 +327,7 @@ class InputWaiter {
      *
      * @param {object} inputData - Object containing the input and its metadata
      * @param {number} inputData.inputNum - The unique inputNum for the selected input
+     * @param {number} inputData.pos - The highlight object for the selected tab
      * @param {string | object} inputData.input - The actual input data
      * @param {string} inputData.name - The name of the input file
      * @param {number} inputData.size - The size in bytes of the input file
@@ -371,6 +372,9 @@ class InputWaiter {
                         input: inputStr
                     });
                 }
+                this.updateInputHighlight(inputData.inputNum, inputData.pos);
+                console.log(JSON.stringify(inputData.pos));
+                this.getHighlightInfo();
 
                 if (!silent) window.dispatchEvent(this.manager.statechange);
             } else {
@@ -552,6 +556,22 @@ class InputWaiter {
                 force: force
             }
         }, transferable);
+    }
+
+    /**
+     * Updates the highlight area for the specified inputNum
+     *
+     * @param {number} inputNum
+     * @param {Object} pos - The position object for the highlight.
+     */
+    updateInputHighlight(inputNum, pos) {
+        this.inputWorker.postMessage({
+            action: "updateInputHighlight",
+            data: {
+                inputNum: inputNum,
+                pos: pos
+            }
+        });
     }
 
     /**
@@ -843,6 +863,16 @@ class InputWaiter {
             this.loadUIFiles(e.target.files);
             e.target.value = "";
         }
+    }
+
+    /**
+     * Return the highlight object of current input tab
+     */
+    async getHighlightInfo() {
+        const activeTab = this.manager.tabs.getActiveInputTab();
+        const tabObj = await this.getInputObj(activeTab);
+        this.manager.highlighter.highlightInput(tabObj.highlight);
+        console.log(activeTab + " - " + JSON.stringify(tabObj));
     }
 
     /**
